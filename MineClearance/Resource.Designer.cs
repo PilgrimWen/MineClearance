@@ -8,7 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace saolei {
+namespace MineClearance
+{
     using System;
     
     

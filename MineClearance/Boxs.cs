@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace saolei
+namespace MineClearance
 {
     class Boxs
     {

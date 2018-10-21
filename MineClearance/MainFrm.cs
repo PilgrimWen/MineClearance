@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-namespace saolei
+namespace MineClearance
 {
     public partial class MainFrm : Form
     {

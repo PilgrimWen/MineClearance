@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace saolei
+namespace MineClearance
 {
     public delegate void FlagChangeHandle();
     class Box

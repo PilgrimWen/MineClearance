@@ -1,4 +1,4 @@
-﻿namespace saolei
+﻿namespace MineClearance
 {
     partial class MainFrm
     {
