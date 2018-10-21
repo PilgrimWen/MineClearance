@@ -11,33 +11,39 @@ namespace saolei
 {
     public partial class MainFrm : Form
     {
+        Random ra;
+        Boxs btns;
+        int cols;
+        int mineCount;
+        int btnWidth;
+
         public MainFrm()
         {
             InitializeComponent();
-            btns = new Buttons(40, 20);
-           // snake = new Snake(5);
+            cols = 10;
+            mineCount = 10;
+            btnWidth = 40;
             ra = new Random();
-            //button = new Button(30, 30, 0, 5);
-            this.Width = 430;
-            this.Height = 500;            //this.button1.Click+=new EventHandler        
+            Init(cols, mineCount, btnWidth);           
         }
-        Random ra;
-        Buttons btns;
-        //Snake snake;
-        //Button button;
-        int second;
+
+        int second=0;
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             btns.Darws(g);
-            //snake.Draw(g);
-            //button.draw(g);
         }
+        
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            for (int i = 0; i < 100; i++)
+            if (second == 0)
             {
-                if (btns.list[i].isIn(e.X, e.Y))
+                this.timer1.Start();
+            }
+            string s="";
+            for (int i = 0; i < cols*cols; i++)
+            {
+                if (btns.list[i].IsIn(e.X, e.Y))
                 {
                     if (e.Button == MouseButtons.Left)
                     {
@@ -48,13 +54,16 @@ namespace saolei
                                 btns.Find(i);
                             if (btns[i].Statu == 1)
                             {
-                                for (int j = 0; j < 100; j++)
+                                for (int j = 0; j < cols*cols; j++)
                                 {
                                     btns.list[j].Flag = 3;
+                                    s += " " + j + ":" + btns[j].Statu+",";
                                     this.Refresh();
                                 }
                                 if (DialogResult.OK == MessageBox.Show("failed", "tip", MessageBoxButtons.OK))
-                                    btns = new Buttons(40, 20);
+                                {
+                                    timer1.Stop();
+                                }
                             }
                         }
                     }
@@ -67,28 +76,16 @@ namespace saolei
                 }
             }
             this.Refresh();
-            if (btns._count == 90)
+            if (btns._count == cols*cols-mineCount)
+            {
+                timer1.Stop();
                 MessageBox.Show("success", "tip", MessageBoxButtons.OK);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            second = 0;
-            this.timer1.Start();
+            }
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //this.Refresh(); snake.Move();
-            //if (snake.row == button.row && snake.col == button.col)
-            //{
-            //    button = new Button(ra.Next(50), ra.Next(50), 0, 5);
-            //}
             this.textBox1.Text = (second / 60).ToString() + ":" + (second % 60).ToString("00");
             second += 1;
-        }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.timer1.Stop();
         }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -108,9 +105,52 @@ namespace saolei
             //        break;
             //}
         }
-        private void Form1_Load(object sender, EventArgs e)
+        private void btnRestart_Click(object sender, EventArgs e)
+        {
+            ReStart();  
+        }
+        private void ReStart()
+        {
+            second = 0;
+            this.textBox1.Text = "0:00";
+            btns = new Boxs(cols,mineCount,btnWidth);
+            this.timer1.Stop();
+            this.Refresh();
+        }
+        private void Init(int cols,int mineCount,int btnWidth)
+        {
+            this.cols = cols;
+            this.mineCount = mineCount;
+            this.btnWidth = btnWidth;
+            btns = new Boxs(cols, mineCount, btnWidth);
+            this.Width = cols * btnWidth + 17;
+            this.Height = cols * btnWidth + 100;
+        }
+        private void MainFrm_Load(object sender, EventArgs e)
         {
             this.textBox1.Text = "0:00";
+            this.cmbLevel.SelectedIndex = 0;
         }
+
+        private void cmbLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            int selectIndex = comboBox.SelectedIndex;
+            switch (selectIndex)
+            {
+                case 0:
+                    Init(10,10,40);
+                    break;
+                case 1:
+                    Init(10, 20, 40);
+                    break;
+                case 2:
+                    Init(15, 20, 30);
+                    break;
+            }
+            this.Refresh();
+        }
+
+
     }
 }

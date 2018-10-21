@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace saolei
 {
     public delegate void FlagChangeHandle();
-    class Button
+    class Box
     {
         int flag;                   //标志显示状态
         public FlagChangeHandle flagChange;
@@ -28,6 +28,10 @@ namespace saolei
             get { return this.flag; }
             set
             {
+                if (flag == 3)
+                {
+                    return;
+                }
                 if (value == 3)
                 {
                     flagChange();
@@ -37,7 +41,7 @@ namespace saolei
         }
         public int lCount { get; set; }//
 
-        public Button(int row, int col, int statu, int width)
+        public Box(int row, int col, int statu, int width)
         {
             this.statu = statu;
             this.x = row * width;
@@ -50,7 +54,7 @@ namespace saolei
         }
 
 
-        public bool isIn(int x, int y)
+        public bool IsIn(int x, int y)
         {
             if ((x - this.x) > 0 && this.x + width - x > 0 && y - this.y > 0 && this.y + width - y > 0)
             {
@@ -67,22 +71,32 @@ namespace saolei
                     g.DrawRectangle(Pens.Black, rec);
                     break;
                 case 1:
-                    g.DrawString("!", new Font("宋体", 15), Brushes.Purple, new Point(rec.X + 2, rec.Y + 2));
+                    Image image = Resource.red;
+                    g.DrawImage(image, rec);
+                    //g.DrawString("!", new Font("宋体", 15), Brushes.Purple, new Point(rec.X + 2, rec.Y + 2));
                     g.DrawRectangle(Pens.Black, rec);
                     break;
                 case 2:
-                    g.DrawString("?", new Font("宋体", 15), Brushes.Purple, new Point(rec.X + 2, rec.Y + 2));
-                    g.DrawRectangle(Pens.Black, rec);
-                    break;
+                    {
+                        var fontSize = g.MeasureString("?", new Font("宋体", 15));
+                        g.DrawString("?", new Font("宋体", 15), Brushes.SeaGreen, new PointF(rec.X + (rec.Width - fontSize.Width) / 2, rec.Y + (rec.Height - fontSize.Height) / 2));
+                        g.DrawRectangle(Pens.Black, rec);
+                        break;
+                    }
                 case 3:
                     if (statu == 0)
                     {
-                        g.DrawString(lCount.ToString(), new Font("宋体", 15), Brushes.Purple, new Point(rec.X + 2, rec.Y + 2));
+                        var fontSize=g.MeasureString(lCount.ToString(), new Font("宋体", 15));
+                        if (lCount != 0)
+                        {
+                            g.DrawString(lCount.ToString(), new Font("宋体", 15), Brushes.SeaGreen, new PointF(rec.X + (rec.Width - fontSize.Width) / 2, rec.Y + (rec.Height - fontSize.Height) / 2));
+                        }
                         g.DrawRectangle(Pens.Black, rec);
                     }
                     else
                     {
-                        g.DrawString("*", new Font("宋体", 15), Brushes.Purple, new Point(rec.X + 2, rec.Y + 2));
+                        var fontSize = g.MeasureString("*", new Font("宋体", 15));
+                        g.DrawString("*", new Font("宋体", 15), Brushes.SeaGreen, new PointF(rec.X + (rec.Width - fontSize.Width) / 2, rec.Y + (rec.Height - fontSize.Height) / 2));
                         g.DrawRectangle(Pens.Black, rec);
                     }
                     break;

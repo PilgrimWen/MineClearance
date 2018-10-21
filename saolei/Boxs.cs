@@ -7,13 +7,14 @@ using System.Drawing;
 
 namespace saolei
 {
-    class Buttons
+    class Boxs
     {
-        public List<Button> list = new List<Button>();
+        public List<Box> list = new List<Box>();
         public int _count = 0;
-        int[] landmine = new int[10];
+        public int cols;
+        int[] landmine ;
         //索引器
-        public Button this[int i]
+        public Box this[int i]
         {
             get
             {
@@ -21,26 +22,26 @@ namespace saolei
             }
         }
         //构造函数
-        public Buttons(int width, int offest)
+        public Boxs(int cols,int mineCount,int width)
         {
-            int num = 100;
+            this.cols = cols;
+            int num = cols*cols;
+            landmine = new int[mineCount];
             for (int i = 0; i < num; i++)
             {
-                Button btn;
-                int row = i / 10;
-                int col = (i % 10);
-                btn = new Button(col, row, 0, width);
-                btn.row = row;
-                btn.col = col;
+                Box btn;
+                int row = i / cols;
+                int col = (i % cols);
+                btn = new Box(col, row, 0, width);
                 btn.Flag = 0;
-                btn.flagChange = new FlagChangeHandle(countHandle);
+                btn.flagChange = new FlagChangeHandle(CountHandle);
                 list.Add(btn);
             }
             Random(landmine, list);
             CountMine(landmine, list);
         }
         //随机生成10个雷
-        public void Random(int[] lei, List<Button> list)
+        public void Random(int[] lei, List<Box> list)
         {
             System.Random random = new Random();
             for (int i = 0; i < lei.Length; i++)
@@ -48,48 +49,47 @@ namespace saolei
                 int index;
                 do
                 {
-                    index = random.Next(100);
+                    index = random.Next(cols*cols);
                 }
                 while (lei.Contains<int>(index));
                 lei[i] = index;
             }
-            for (int i = 0; i < lei.Length; i++)
+            foreach(int ind in  lei)
             {
-                int index = lei[i];
-                list[index].Statu = 1;
+                list[ind].Statu = 1;
             }
         }
         //数雷的个数
-        public void CountMine(int[] lei, List<Button> list)
+        public void CountMine(int[] lei, List<Box> list)
         {
             for (int i = 0; i < lei.Length; i++)
             {
                 int index = lei[i];
                 //右
-                bool right = index % 10 != 9;
+                bool right = index % cols != cols-1;
                 if (right)
                 { list[index + 1].lCount += 1; }
                 //左
-                bool left = index % 10 != 0;
+                bool left = index % cols != 0;
                 if (left)
                 { list[index - 1].lCount += 1; }
                 //上
-                bool up = index / 10 < 9;
+                bool up = index / cols < cols-1;
                 if (up)
-                { list[index + 10].lCount += 1; }
+                { list[index + cols].lCount += 1; }
                 //下
-                bool down = index / 10 > 0;
+                bool down = index / cols > 0;
                 if (down)
-                { list[index - 10].lCount += 1; }
+                { list[index - cols].lCount += 1; }
 
                 if (right && up)
-                { list[index + 11].lCount += 1; }
+                { list[index + cols+1].lCount += 1; }
                 if (right && down)
-                { list[index - 9].lCount += 1; }
+                { list[index - cols+1].lCount += 1; }
                 if (left && up)
-                { list[index + 9].lCount += 1; }
+                { list[index + cols-1].lCount += 1; }
                 if (left && down)
-                { list[index - 11].lCount += 1; }
+                { list[index - cols-1].lCount += 1; }
             }
         }
         //寻找周围雷数为零的
@@ -97,7 +97,7 @@ namespace saolei
         {
             int index = i;
             //右
-            bool right = index % 10 != 9;
+            bool right = index % cols != cols-1;
             if (right)
             {
                 if (list[index + 1].lCount == 0 && list[index + 1].Flag != 3)
@@ -109,7 +109,7 @@ namespace saolei
                     list[index + 1].Flag = 3;
             }
             //左
-            bool left = index % 10 != 0;
+            bool left = index % cols != 0;
             if (left)
             {
                 if (list[index - 1].lCount == 0 && list[index - 1].Flag != 3)
@@ -121,79 +121,79 @@ namespace saolei
                     list[index - 1].Flag = 3;
             }
             //上
-            bool up = index / 10 < 9;
+            bool up = index / cols < cols-1;
             if (up)
             {
-                if (list[index + 10].lCount == 0 && list[index + 10].Flag != 3)
+                if (list[index + cols].lCount == 0 && list[index + cols].Flag != 3)
                 {
-                    list[index + 10].Flag = 3;
-                    Find(index + 10);
+                    list[index + cols].Flag = 3;
+                    Find(index + cols);
                 }
                 else
-                    list[index + 10].Flag = 3;
+                    list[index + cols].Flag = 3;
             }
             //下
-            bool down = index / 10 > 0;
+            bool down = index / cols > 0;
             if (down)
             {
-                if (list[index - 10].lCount == 0 && list[index - 10].Flag != 3)
+                if (list[index - cols].lCount == 0 && list[index - cols].Flag != 3)
                 {
-                    list[index - 10].Flag = 3;
-                    Find(index - 10);
+                    list[index - cols].Flag = 3;
+                    Find(index - cols);
                 }
                 else
-                    list[index - 10].Flag = 3;
+                    list[index - cols].Flag = 3;
             }
 
             if (right && up)
             {
-                if (list[index + 11].lCount == 0 && list[index + 11].Flag != 3)
+                if (list[index + cols+1].lCount == 0 && list[index + cols + 1].Flag != 3)
                 {
-                    list[index + 11].Flag = 3;
-                    Find(index + 11);
+                    list[index + cols + 1].Flag = 3;
+                    Find(index + cols + 1);
                 }
                 else
-                    list[index + 11].Flag = 3;
+                    list[index + cols + 1].Flag = 3;
             }
             if (right && down)
             {
-                if (list[index - 9].lCount == 0 && list[index - 9].Flag != 3)
+                if (list[index - cols+1].lCount == 0 && list[index - cols + 1].Flag != 3)
                 {
-                    list[index - 9].Flag = 3;
-                    Find(index - 9);
+                    list[index - cols + 1].Flag = 3;
+                    Find(index - cols + 1);
                 }
                 else
-                    list[index - 9].Flag = 3;
+                    list[index - cols + 1].Flag = 3;
             }
             if (left && up)
             {
-                if (list[index + 9].lCount == 0 && list[index + 9].Flag != 3)
+                if (list[index + cols-1].lCount == 0 && list[index + cols - 1].Flag != 3)
                 {
-                    list[index + 9].Flag = 3;
-                    Find(index + 9);
+                    list[index + cols - 1].Flag = 3;
+                    Find(index + cols - 1);
                 }
                 else
-                    list[index + 9].Flag = 3;
+                    list[index + cols - 1].Flag = 3;
             }
             if (left && down)
             {
-                if (list[index - 11].lCount == 0 && list[index - 11].Flag != 3)
+                if (list[index - cols-1].lCount == 0 && list[index - cols - 1].Flag != 3)
                 {
-                    list[index - 11].Flag = 3;
-                    Find(index - 11);
+                    list[index - cols - 1].Flag = 3;
+                    Find(index - cols - 1);
                 }
                 else
-                    list[index - 11].Flag = 3;
+                    list[index - cols - 1].Flag = 3;
             }
         }
         public void Darws(Graphics g)
         {
-            foreach (Button btn in list)
+            foreach (Box btn in list)
             {
                 btn.draw(g);
             }
         }
-        public void countHandle()
-        { _count++; }
+        public void CountHandle()
+        {lock(this) _count++; }
     }
 }
